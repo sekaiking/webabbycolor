@@ -10,14 +10,14 @@ const bg = "#fff";
 
 let c = ["#fff", "#fff", "#fff", "#fff", "#fff"];
 function preload() {
-  const size = floor(min(windowHeight, windowWidth) / 1.6);
+  const size = floor(1080 / 1.6);
   const i = `https://source.unsplash.com/random/${size}x${windowHeight}?sig=${random()}`;
   console.log(i);
   ex(i);
   img = loadImage(i);
 }
 function setup() {
-  createCanvas(min(windowHeight, windowWidth), min(windowHeight, windowWidth));
+  createCanvas(1080, 1080);
   noLoop();
   background(bg);
   noStroke();
@@ -26,8 +26,8 @@ function setup() {
 }
 
 function draw() {
-  const size = min(windowHeight, windowWidth);
-  const startX = floor(min(windowHeight, windowWidth) / 1.6) + gapX;
+  const size = 1080;
+  const startX = floor(1080 / 1.6) + gapX;
   const sizeX = windowWidth - startX;
   const sizeY = (size - gapY) / show;
   for (let i = 0; i < show; i++) {
