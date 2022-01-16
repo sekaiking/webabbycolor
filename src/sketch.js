@@ -1,59 +1,105 @@
-// size
+// Config
+const height = 1080;
+const width = 1080;
+const padding = 0; //1080 / (1.6 * 5);
+const colorCount = 5;
 
-// how many colors
-const show = 4;
-const gapX = 8;
-const gapY = 10;
-
-// colors
+// Colors
 const bg = "#fff";
 
-let c = ["#fff", "#fff", "#fff", "#fff", "#fff"];
+// Variables
+const imgHeight = height - 2 * padding;
+const imgWidth = width * 0.7 - 2 * padding;
+const imgUrl = `https://source.unsplash.com/random/${imgWidth}x${imgHeight}`;
+let imgNode, imgP5;
+
+// Preload image
 function preload() {
-  const size = floor(1080 / 1.6);
-  const i = `https://source.unsplash.com/random/${size}x${windowHeight}?sig=${random()}`;
-  console.log(i);
-  ex(i);
-  img = loadImage(i);
+  imgP5 = loadImage(imgUrl);
 }
-function setup() {
-  createCanvas(1080, 1080);
+
+// Setup
+async function setup() {
+  // Create Canvas
+  let canva = createCanvas(width, height);
+
   noLoop();
   background(bg);
   noStroke();
 
-  image(img, 0, 0);
+  image(imgP5, padding, padding, imgWidth, imgHeight);
+
+  await drawColors();
+  drawWebabby();
+  noStroke();
+
+  saveCanvas(canva, "myCanvas", "jpg");
 }
 
-function draw() {
-  const size = 1080;
-  const startX = floor(1080 / 1.6) + gapX;
-  const sizeX = windowWidth - startX;
-  const sizeY = (size - gapY) / show;
-  for (let i = 0; i < show; i++) {
-    fill(c[i]);
-    rect(startX, (sizeY + gapY) * i, sizeX, sizeY);
+async function drawColors() {
+  const imgNode = new Image();
+  imgNode.crossOrigin = "Anonymous";
+  imgNode.src = imgUrl;
+
+  await imgNode.decode();
+
+  const colorThief = new ColorThief();
+  const palette = colorThief.getPalette(imgNode);
+  console.log(palette);
+
+  const startX = padding + imgWidth;
+  const startY = padding;
+  const sizeX = width - imgWidth - padding * 2;
+  const sizeY = (height - 2 * padding) / colorCount;
+  for (let i = 0; i < colorCount; i++) {
+    fill(palette[i]);
+    rect(startX, startY + sizeY * i, sizeX, sizeY);
+
+    // drawing hex value
+
+    fill(textColor(palette[i]));
+    textSize(40);
+    textAlign(LEFT, CENTER);
+    textFont("Dongle");
+    const c = color(palette[i]).toString("#rrggbb");
+    const c1 = color(palette[i]).toString("rgb");
+    text(c, startX + 30, startY + sizeY * i + sizeY / 2 - 20);
+    text(c1, startX + 30, startY + sizeY * i + sizeY / 2 + 20);
   }
 }
 
-function generate_color() {
-  r = random(255);
-  g = random(100, 200);
-  b = random(100);
-  a = random(200, 255);
-  return color(r, g, b, a);
+function drawWebabby() {
+  stroke(color(floor(random(255)), floor(random(255)), floor(random(255))));
+  fill(255);
+  ellipse(60 * 1.6, height - 60 * 1.6, 160, 160);
+  fill(0);
+  textSize(80);
+  textAlign(CENTER, CENTER);
+  textFont("Dongle");
+
+  textSize(50);
+  text("WEBABBY", 60 * 1.6, height - 60 * 1.6 + 7);
+  // text("W", 50 * 1.6, height - 42 * 1.6);
+  // text("WEBABBY", width / 2, height - padding / 3);
 }
 
-const ex = (source) => {
-  const colorThief = new ColorThief();
-  const img = new Image();
-
-  img.crossOrigin = "Anonymous";
-  img.src = source;
-
-  img.addEventListener("load", function () {
-    console.log(colorThief.getPalette(img));
-    c = colorThief.getPalette(img);
-    redraw()
+function luminance(r, g, b) {
+  var a = [r, g, b].map(function (v) {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
   });
-};
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+function contrast(rgb1, rgb2) {
+  var lum1 = luminance(red(rgb1), green(rgb1), blue(rgb1));
+  var lum2 = luminance(red(rgb2), green(rgb2), blue(rgb2));
+  var brightest = Math.max(lum1, lum2);
+  var darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+}
+function textColor(c) {
+  if (contrast(color("#fff"), c) > contrast(color("#010101"), c)) {
+    return color("#fff");
+  }
+  return color("#010101");
+}
