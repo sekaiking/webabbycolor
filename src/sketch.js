@@ -2,6 +2,8 @@
 
 // how many colors
 const show = 4;
+const gapX = 8;
+const gapY = 10;
 
 // colors
 const bg = "#fff";
@@ -9,33 +11,28 @@ const bg = "#fff";
 let c = ["#fff", "#fff", "#fff", "#fff", "#fff"];
 function preload() {
   const size = floor(min(windowHeight, windowWidth) / 1.6);
-  const i = `https://source.unsplash.com/random/${size}x${size}?sig=${floor(
-    random(1, 1000)
-  )}`;
+  const i = `https://source.unsplash.com/random/${size}x${windowHeight}?sig=${random()}`;
+  console.log(i);
   ex(i);
   img = loadImage(i);
 }
 function setup() {
   createCanvas(min(windowHeight, windowWidth), min(windowHeight, windowWidth));
-  // noLoop();
+  noLoop();
   background(bg);
   noStroke();
 
-  const start = width / 2 - width / 1.6 / 2;
-  image(img, start, start - 100);
+  image(img, 0, 0);
 }
 
 function draw() {
-  const squareSize = 160;
-  const start = width / 2 - (squareSize * show) / 2;
+  const size = min(windowHeight, windowWidth);
+  const startX = floor(min(windowHeight, windowWidth) / 1.6) + gapX;
+  const sizeX = windowWidth - startX;
+  const sizeY = (size - gapY) / show;
   for (let i = 0; i < show; i++) {
     fill(c[i]);
-    rect(
-      start + i * squareSize,
-      height - squareSize - 50,
-      squareSize,
-      squareSize
-    );
+    rect(startX, (sizeY + gapY) * i, sizeX, sizeY);
   }
 }
 
@@ -57,5 +54,6 @@ const ex = (source) => {
   img.addEventListener("load", function () {
     console.log(colorThief.getPalette(img));
     c = colorThief.getPalette(img);
+    redraw()
   });
 };
