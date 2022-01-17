@@ -11,17 +11,19 @@ const bg = "#fff";
 const imgHeight = height - 2 * padding;
 const imgWidth = width * 0.7 - 2 * padding;
 const imgUrl = `https://source.unsplash.com/random/${imgWidth}x${imgHeight}`;
-let imgNode, imgP5;
+let imgNode, imgP5, font;
 
 // Preload image
 function preload() {
   imgP5 = loadImage(imgUrl);
+  font = loadFont("./lib/Dongle-Regular.ttf");
 }
 
+let canva, im, caption;
 // Setup
 async function setup() {
   // Create Canvas
-  let canva = createCanvas(width, height);
+  canva = createCanvas(width, height);
 
   noLoop();
   background(bg);
@@ -33,7 +35,9 @@ async function setup() {
   drawWebabby();
   noStroke();
 
-  saveCanvas(canva, "myCanvas", "jpg");
+  im = get();
+  console.log(im);
+  console.log(canva);
 }
 
 async function drawColors() {
@@ -51,6 +55,8 @@ async function drawColors() {
   const startY = padding;
   const sizeX = width - imgWidth - padding * 2;
   const sizeY = (height - 2 * padding) / colorCount;
+
+  let hex = "";
   for (let i = 0; i < colorCount; i++) {
     fill(palette[i]);
     rect(startX, startY + sizeY * i, sizeX, sizeY);
@@ -58,14 +64,30 @@ async function drawColors() {
     // drawing hex value
 
     fill(textColor(palette[i]));
-    textSize(40);
+    textSize(50);
     textAlign(LEFT, CENTER);
-    textFont("Dongle");
+    textFont(font);
     const c = color(palette[i]).toString("#rrggbb");
     const c1 = color(palette[i]).toString("rgb");
-    text(c, startX + 30, startY + sizeY * i + sizeY / 2 - 20);
-    text(c1, startX + 30, startY + sizeY * i + sizeY / 2 + 20);
+    text(c, startX + 30, startY + sizeY * i + sizeY / 2 - 30);
+    text(c1, startX + 30, startY + sizeY * i + sizeY / 2 + 30);
+
+    hex = hex + (i > 0 ? " • " : "") + c;
   }
+
+  caption = `
+What would be a good name for this palette?
+⠀⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣
+Colors :⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣
+${hex}
+⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣
+Hope this palette inspires you to make something awesome. If you found this valuable, make sure to share the love and save it for later!⁣⁣⁣⁣⁣⁣⁣⁣⁣ ⁣⁣⁣⁣
+⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣⁣
+🎨 #Webabby
+🎨 #Inspiration
+🎨 #Colors
+⁣⁣⁣⁣⁣⁣
+⁣⁣⁣⁣⁣⁣⁣`;
 }
 
 function drawWebabby() {
@@ -75,10 +97,10 @@ function drawWebabby() {
   fill(0);
   textSize(80);
   textAlign(CENTER, CENTER);
-  textFont("Dongle");
+  textFont(font);
 
   textSize(50);
-  text("WEBABBY", 60 * 1.6, height - 60 * 1.6 + 7);
+  text("WEBABBY", 60 * 1.6, height - 60 * 1.6 - 8);
   // text("W", 50 * 1.6, height - 42 * 1.6);
   // text("WEBABBY", width / 2, height - padding / 3);
 }
